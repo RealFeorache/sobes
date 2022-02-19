@@ -6,10 +6,10 @@ def valid_number(value) -> bool:
     """valid_int - Check if the value is a number.
 
     Args:
-        value: Any value to check if it's a number
+        value: Any value to check if it's a number.
 
     Returns:
-        bool: The value is a number
+        bool: The value is a number.
     """
     try:
         value = int(value)
@@ -42,10 +42,11 @@ class VendingMachine:
 
         with open(self.input_filename) as infile:
             self.input_json = json.loads(infile.read())
-            self.products = self.input_json["items"]
 
-        self.number_of_products_available = len(
-            [x for x in self.products if x["amount"] > 0])
+        # Get non-zero products available
+        all_products = self.input_json["items"]
+        self.products = [x for x in all_products if x["amount"] > 0]
+        self.number_of_products_available = len(self.products)
 
     def print_available_products(self) -> None:
         print("The following products are available for purchase:")
@@ -68,18 +69,19 @@ class VendingMachine:
         while product.choice_number is None:
 
             product.choice_number = input(
-                "Choose the product you wish to procure\n")
+                "Choose the number of the product you wish to procure\n")
             # check if the entered value is int
             if valid_number(product.choice_number):
                 product.choice_number = int(product.choice_number)
-            # check if the product number is available
+            # check if the product number is in range of available products
             if product.choice_number not in range(0, self.number_of_products_available+1):
                 product.choice_number = None
-            # provide error
+            # provide error if needed
             if product.choice_number is None:
                 print("You have to enter a number between 1 and " +
                       str(self.number_of_products_available))
 
+        # get more transaction details
         product.stock = self.products[product.choice_number-1]["amount"]
         product.index = product.choice_number-1
 
@@ -93,7 +95,7 @@ class VendingMachine:
             # have sufficient stock
             if product.qty not in range(0, product.stock+1):
                 product.qty = None
-            # provide error
+            # provide error if needed
             if product.qty is None:
                 print("You have to enter a number between 1 and " +
                       str(product.stock))
