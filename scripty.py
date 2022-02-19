@@ -56,7 +56,13 @@ class VendingMachine:
             index += 1
 
     def get_product_choice(self) -> Product_Sale:
+        """get_product_choice - get product choice number and qty.
 
+        Fill in the transaction details.
+
+        Returns:
+            Product_Sale: transaction details for the product
+        """
         product = Product_Sale()
 
         while product.choice_number is None:
@@ -124,15 +130,21 @@ class VendingMachine:
 
         return change
 
-    def stock_transaction(self, product_choice):
+    def stock_transaction(self, product_choice: Product_Sale) -> None:
+        """Do a stock transaction, decreasing the amount of product available.
+
+        Args:
+            product_choice (Product_Sale): Product sale transaction
+        """
         self.products[product_choice.index]["amount"] -= product_choice.qty
 
-    def update_availability(self):
+    def update_availability(self) -> None:
+        """Update the json file with product stocks."""
         self.input_json["items"] = self.products
         with open(self.input_filename, "w") as outfile:
             json.dump(self.input_json, outfile, ensure_ascii=False, indent=4)
 
-    def get_purchase(self):
+    def get_purchase(self) -> None:
         self.print_available_products()
         choice = self.get_product_choice()
         change = self.get_payment(choice)
@@ -147,5 +159,5 @@ while True:
 
     choice = input(
         "Do you wish to make another purchase? (Y for Yes or anything else to refuse)\n")
-    if choice != "Y":
+    if choice.upper() != "Y":
         break
