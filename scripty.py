@@ -86,7 +86,7 @@ class VendingMachine:
             if valid_number(product.choice_number):
                 product.choice_number = int(product.choice_number)
             # check if the product number is in range of available products
-            if product.choice_number not in range(0, self.number_of_products_available+1):
+            if product.choice_number not in range(1, self.number_of_products_available+1):
                 product.choice_number = None
             # provide error if needed
             if product.choice_number is None:
