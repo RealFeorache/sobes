@@ -43,9 +43,15 @@ class VendingMachine:
         self.logger = logging
 
         self.input_filename = filename
-
-        with open(self.input_filename) as infile:
-            self.input_json = json.loads(infile.read())
+        try:
+            with open(self.input_filename) as infile:
+                self.input_json = json.loads(infile.read())
+        except FileNotFoundError:
+            input(
+                "The input file with the db \"input.json\" was not provided. Press Enter to exit\n")
+            self.logger.critical(
+                "The input file with db was not provided. Exiting.")
+            exit()
 
         # Get non-zero products available
         all_products = self.input_json["items"]
