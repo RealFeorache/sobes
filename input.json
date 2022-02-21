@@ -11,7 +11,7 @@
         },
         {
             "name": "Hersheys",
-            "amount": 10,
+            "amount": 6,
             "price": "$2.25"
         },
         {
@@ -23,11 +23,6 @@
             "name": "Hersheys Special Dark",
             "amount": 5,
             "price": "$1.75"
-        },
-        {
-            "name": "Reese's",
-            "amount": 0,
-            "price": "$1.05"
         },
         {
             "name": "Nutrageous",

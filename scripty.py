@@ -1,5 +1,6 @@
 
 import json
+import logging
 
 
 def valid_number(value) -> bool:
@@ -32,12 +33,15 @@ class Product_Sale:
 
 class VendingMachine:
 
-    def __init__(self, filename: str) -> None:
+    def __init__(self, filename: str, logger) -> None:
         """__init__ - Initiate the Vending Machine's products.
 
         Args:
             filename (str): path to file with JSON db of products
         """
+        # initialize the logger
+        self.logger = logging
+
         self.input_filename = filename
 
         with open(self.input_filename) as infile:
@@ -49,6 +53,7 @@ class VendingMachine:
         self.number_of_products_available = len(self.products)
 
     def print_available_products(self) -> None:
+        self.logger.info("Printing the product list for choice...")
         print("The following products are available for purchase:")
         index = 0
         for product in self.products:
@@ -64,8 +69,9 @@ class VendingMachine:
         Returns:
             Product_Sale: transaction details for the product
         """
-        product = Product_Sale()
 
+        product = Product_Sale()
+        self.logger.info("Getting the product choice number...")
         while product.choice_number is None:
 
             product.choice_number = input(
@@ -85,6 +91,7 @@ class VendingMachine:
         product.stock = self.products[product.choice_number-1]["amount"]
         product.index = product.choice_number-1
 
+        self.logger.info("Getting the product qty...")
         while product.qty is None:
             product.qty = input(
                 "Choose the amount of "+self.products[product.index]["name"]+" you wish to procure\n")
@@ -107,6 +114,7 @@ class VendingMachine:
         return product
 
     def get_payment(self, product_choice: Product_Sale) -> bool:
+        self.logger.info("Getting the payment...")
         print(f"Total for payment is {product_choice.for_payment}$.")
 
         payment = None
@@ -138,28 +146,40 @@ class VendingMachine:
         Args:
             product_choice (Product_Sale): Product sale transaction
         """
+        self.logger.info("Performing the stock transaction in memory...")
         self.products[product_choice.index]["amount"] -= product_choice.qty
 
     def update_availability(self) -> None:
         """Update the json file with product stocks."""
+        self.logger.info("Performing the stock transaction to the file...")
         self.input_json["items"] = self.products
         with open(self.input_filename, "w") as outfile:
             json.dump(self.input_json, outfile, ensure_ascii=False, indent=4)
 
     def get_purchase(self) -> None:
+        self.logger.info("Starting the purchase...")
         self.print_available_products()
         choice = self.get_product_choice()
         change = self.get_payment(choice)
         self.stock_transaction(choice)
         self.update_availability()
+        self.logger.info("Ending the purchase...")
 
 
-vendingMachine = VendingMachine("input.json")
+def main():
+    logging.basicConfig(filename='logs.log',
+                        level=logging.INFO)
 
-while True:
-    vendingMachine.get_purchase()
+    vendingMachine = VendingMachine("input.json", logging)
 
-    choice = input(
-        "Do you wish to make another purchase? (Y for Yes or anything else to refuse)\n")
-    if choice.upper() != "Y":
-        break
+    while True:
+        vendingMachine.get_purchase()
+
+        choice = input(
+            "Do you wish to make another purchase? (Y for Yes or anything else to refuse)\n")
+        if choice.upper() != "Y":
+            break
+
+
+if __name__ == '__main__':
+    main()
